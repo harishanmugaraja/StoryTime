@@ -23,10 +23,11 @@ from transformers import AutoFeatureExtractor
 
 
 # load safety model
-safety_model_id = "CompVis/stable-diffusion-safety-checker"
-safety_feature_extractor = AutoFeatureExtractor.from_pretrained(safety_model_id)
-safety_checker = StableDiffusionSafetyChecker.from_pretrained(safety_model_id)
+# safety_model_id = "CompVis/stable-diffusion-safety-checker"
+# safety_feature_extractor = AutoFeatureExtractor.from_pretrained(safety_model_id)
+# safety_checker = StableDiffusionSafetyChecker.from_pretrained(safety_model_id)
 
+prompts_list = []
 
 def chunk(it, size):
     it = iter(it)
@@ -70,6 +71,30 @@ def put_watermark(img, wm_encoder=None):
         img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
         img = wm_encoder.encode(img, 'dwtDct')
         img = Image.fromarray(img[:, :, ::-1])
+    return img
+
+def add_subtitle(img, subtitle):
+    # img = cv2.imread(img)
+    # org
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    org = (0, 280)
+
+    # fontScale
+    fontScale = 0.3
+
+    # Blue color in BGR
+    color = (255, 255, 255)
+
+    # Line thickness of 1 px
+    thickness = 1
+
+    # Displaying the image
+    black = [0, 0, 0]
+    img = cv2.copyMakeBorder(np.float32(img), 0, 50, 0, 0, cv2.BORDER_CONSTANT, value=black)
+
+    img = cv2.putText(img, subtitle, org, font,
+                    fontScale, color, thickness, cv2.LINE_AA)
+
     return img
 
 
@@ -266,6 +291,7 @@ def main():
         print(f"reading prompts from {opt.from_file}")
         with open(opt.from_file, "r") as f:
             data = f.read().splitlines()
+            prompts_list = data
             data = list(chunk(data, batch_size))
 
     sample_path = os.path.join(outpath, "samples")
@@ -306,7 +332,8 @@ def main():
                         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
                         x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
 
-                        x_checked_image, has_nsfw_concept = check_safety(x_samples_ddim)
+                        # x_checked_image, has_nsfw_concept = check_safety(x_samples_ddim)
+                        x_checked_image = x_samples_ddim
 
                         x_checked_image_torch = torch.from_numpy(x_checked_image).permute(0, 3, 1, 2)
 
@@ -315,7 +342,8 @@ def main():
                                 x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
                                 img = Image.fromarray(x_sample.astype(np.uint8))
                                 img = put_watermark(img, wm_encoder)
-                                img.save(os.path.join(sample_path, f"{base_count:05}.png"))
+                                img = add_subtitle(img, prompts_list[base_count])
+                                cv2.imwrite(os.path.join(sample_path, f"{base_count}.png"), img)
                                 base_count += 1
 
                         if not opt.skip_grid:
@@ -331,6 +359,7 @@ def main():
                     grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
                     img = Image.fromarray(grid.astype(np.uint8))
                     img = put_watermark(img, wm_encoder)
+
                     img.save(os.path.join(outpath, f'grid-{grid_count:04}.png'))
                     grid_count += 1
 
