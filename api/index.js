@@ -22,10 +22,6 @@ function makeid(length) {
    return result;
 }
 
-// api.get('/', (req, res) => {
-//     console.log("Hello World");
-// });
-
 api.post('/generate', (req, res) => {
     if(!req.body.story){
         console.log("Received story: "+ req.body.story);
@@ -36,15 +32,15 @@ api.post('/generate', (req, res) => {
     console.log(splitLines);
 
     var hash = makeid(5);
-    var filename = hash + ".txt";
+    var filename = "prompts.txt";
     var filedata = "";
     splitLines.forEach(line => {
         filedata = filedata + line.trim() + "\n"
     });
     filedata = filedata.trim();
-    fs.writeFile("story-text/"+filename, filedata, function (err) {
+    fs.writeFile("stories/"+hash+"/"+filename, filedata, function (err) {
         if (err) return console.log(err);
-        console.log(hash + '.txt > helloworld.txt')
+        console.log('Failed to write to file')
     });
     return "Success";
 });

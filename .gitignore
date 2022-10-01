@@ -3,3 +3,4 @@ ldm/
 models/
 latent_diffusion.egg-info/
 src/
+api/node_modules
