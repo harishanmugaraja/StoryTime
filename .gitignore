@@ -1,6 +1,3 @@
 outputs/
-ldm/
-models/
-latent_diffusion.egg-info/
-src/
+*.ckpt
 api/node_modules
