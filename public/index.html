@@ -1,11 +1,160 @@
 <html>
     <header>
-        <script src = "index.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
-        <link rel = "stylesheet" href = "styles.css">
-        <link rel = "stylesheet" href = "index.css">
+        <style>
+
+        .title{
+            position: relative;
+            display: flex;
+            height: 20vh;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .text-input{
+            position: relative;
+            display: flex;
+            height: 80vh;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .instr{
+            position: relative;
+            display: flex;
+            height: 16vh;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .input{
+            position: relative;
+            display: flex;
+            height: 56vh;
+            width: 100%;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .generate{
+            position: relative;
+            display: flex;
+            height: 16vh;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #textarea{
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            width: 95%;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .generate-btn{
+            border-radius: 3vh;
+            height: 6vh;
+            width: 25vh;
+            color: #c5c6c7;
+            border-color: #45a29e;
+            border-width: 2px;
+            border-style: solid;
+            background-color: #1f2833;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .generate-btn:hover{
+            background-color: #66fcf1;
+            color: black;
+            border-color: #66fcf1;
+            cursor: pointer;
+        }
+
+        </style>
+        <style>
+        body {
+            background-color: #0b0c10;
+        }
+
+        h1 {
+            color: #66fcf1;
+            font-size: 8vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        p{
+            color: #c5c6c7;
+            font-size: 3vh;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        textarea{
+            font-size: 2vh;
+        }
+
+        @import url('../assets/type/metropolis/metropolis.css');
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          text-align: center;
+          font-family: metropolisbold, Geneva, Tahoma, sans-serif;
+        }
+
+        .box {
+          position: absolute;
+          z-index: -1;
+          width: 100%;
+          height: 100vh;
+          left: 0;
+          top: 0;
+          overflow: hidden;
+          background-color:  #0b0c10;
+        }
+
+        .box::before {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          width: 300vh;
+          height: 300vh;
+          background: #1e3937a1;
+          top: -50vh;
+          transform: translateX(-50%) rotate(0deg);
+          border-radius: 45%;
+          animation: fill 7s ease-in infinite;
+        }
+
+        @keyframes fill {
+          0% {
+            top: -300vh;
+            transform: translateX(-50%) rotate(360deg);
+          }
+          90% {
+            top: -50vh;
+            transform: translateX(-50%) rotate(0deg);
+          }
+          100% {
+            background: #0b0c10;
+          }
+        }
+        </style>
     </header>
     <body>
         <div class="box"></div>
@@ -23,9 +172,43 @@
                 <textarea id = "textarea"
                 placeholder =  "Enter your story and watch it come to life..."></textarea>
             </div>
-            <div class = "generate" onclick = "generate()">
+            <div id="genButton" class = "generate" onclick = "generate()">
                 <input class = "generate-btn" type = "button" value = "Generate">
+            </div>
+            <div id="downloadMovie" class = "generate" onclick = "download()">
+                <input class = "generate-btn" type = "button" value = "Download Story!">
             </div>
         </div>
     </body>
+    <script>
+    API_URL = "http://localhost:8080";
+
+    var dm = document.getElementById("downloadMovie");
+    dm.style.display = "none";
+
+    function download(){
+      console.log('inside of download');
+      window.open('http://localhost:8080/download', '_blank');
+    }
+
+    async function generate(){
+      console.log("entered generate!");
+      var gb = document.getElementById("genButton");
+      gb.style.display = "none";
+      dm.style.display = "none";
+      var story = document.getElementById("textarea").value;
+      data = {"story": story};
+      const response = await fetch(API_URL + "/generate", {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': "*"
+          },
+          body: JSON.stringify(data),
+      });
+      console.log(response);
+      gb.style.display = '';
+      dm.style.display = '';
+    }
+    </script>
 </html>
