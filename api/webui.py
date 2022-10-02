@@ -88,7 +88,7 @@ def add_subtitle(img, subtitle):
     # fontScale
     fontScale = 0.3
 
-    # Blue color in BGR
+    # White color in BGR
     color = (255, 255, 255)
 
     # Line thickness of 1 px
@@ -675,7 +675,6 @@ def check_prompt_length(prompt, comments):
 def save_sample(image, sample_path_i, filename, jpg_sample, write_info_files, write_sample_info_to_log_file, prompt_matrix, init_img, uses_loopback, uses_random_seed_loopback, skip_save,
 skip_grid, sort_samples, sampler_name, ddim_eta, n_iter, batch_size, i, denoising_strength, resize_mode, skip_metadata=False):
     ''' saves the image according to selected parameters. Expects to find generation parameters on image, set by ImageMetadata.set_on_image() '''
-    print("SAVING")
     metadata = ImageMetadata.get_from_image(image)
     if not skip_metadata and metadata is None:
         print("No metadata passed in to save. Set metadata on the image before calling save_sample using the ImageMetadata.set_on_image() function.")
@@ -1219,6 +1218,7 @@ def process_images(
                                     cfg_scale=cfg_scale, normalize_prompt_weights=normalize_prompt_weights, denoising_strength=denoising_strength,
                                     GFPGAN=use_GFPGAN )
                 image = Image.fromarray(x_sample)
+                # image = add_subtitle(image, prompt)
                 image = perform_color_correction(image, correction_target, do_color_correction)
                 ImageMetadata.set_on_image(image, metadata)
                 
