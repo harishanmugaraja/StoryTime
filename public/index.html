@@ -209,9 +209,9 @@
             </div>
         </div>
     </body>
+    <script src="https://cdnjs.deepai.org/deepai.min.js"></script>
     <script>
     API_URL = "http://localhost:8080";
-
     var dm = document.getElementById("downloadMovie");
     var ds = document.getElementById("downloadSpinner");
     var gb = document.getElementById("genButton");
@@ -228,7 +228,26 @@
       dm.style.display = "none";
       ds.style.display = '';
       var story = document.getElementById("textarea").value;
-      data = {"story": story};
+      deepai.setApiKey('010db831-fbdc-4683-b188-89dc060790bf');
+      var sent_res = await deepai.callStandardApi("sentiment-analysis", {text: story});
+      console.log(sent_res);
+
+
+      var sent_string = sent_res['output'][0];
+
+      console.log(sent_string);
+      var sent_val = 0;
+
+
+      if (sent_string.includes('sitive')) {
+        sent_val = 1;
+      }
+      if (sent_string.includes('egative')) {
+        sent_val = -1;
+      }
+
+
+      data = {"story": story, "sent":sent_val};
       const response = await fetch(API_URL + "/generate", {
           method: 'POST',
           headers: {
@@ -241,6 +260,8 @@
       gb.style.display = '';
       dm.style.display = '';
       ds.style.display = "none";
+
+
     }
     </script>
 </html>

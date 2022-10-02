@@ -3,7 +3,7 @@ import glob
 import os
 from moviepy.editor import *
 
-def generate_story_cv(hash):
+def generate_story_cv(hash, music_num):
     outdir = "./stories/"+hash+"/"
 
     img_array = []
@@ -30,5 +30,7 @@ def add_music(vid_hash, music_file):
 if __name__ == '__main__':
     # generate_story()
     hash = sys.argv[1]
-    generate_story_cv(hash)
-    add_music(hash, './music/ele.mp3') #have sentiment analysis passed here.
+    music_num = int(sys.argv[2])
+    generate_story_cv(hash, music_num)
+    song_dict = {-1 :'./music/s.mp3', 0:'./music/n.mp3', 1:'./music/h.mp3'}
+    add_music(hash, song_dict[music_num]) #have sentiment analysis passed here.

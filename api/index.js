@@ -35,11 +35,20 @@ api.get('/download', (req, res) => {
 
 api.post('/generate', async (req, res) => {
 
-    if(!req.body.story){
+    if(req.body.story){
         console.log("Received story: "+ req.body.story);
     }
 
+    if(req.body.sent){
+        console.log("Received sent: "+ req.body.sent);
+    }
+
     var story = req.body.story;
+    var sent = req.body.sent;
+
+    console.log(story);
+    console.log(req.body);
+
     var splitLines = story.match(/[^\.!\?]+[\.!\?]+/g);
     console.log(splitLines);
 
@@ -72,7 +81,7 @@ api.post('/generate', async (req, res) => {
       }
       // log the output received from the command
       console.log("Output: \n", output)
-      exec('python generator.py '+hash+'', (err, output) => {
+      exec('python generator.py '+hash+' '+sent, (err, output) => {
         // once the command has completed, the callback function is called
         if (err) {
             // log and return if we encounter an error
