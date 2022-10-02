@@ -30,7 +30,7 @@ api.get('/', (req, res) => {
 });
 
 api.get('/download', (req, res) => {
-  res.download("stories/"+most_recent_hash+"/movie.avi")
+  res.download("stories/"+most_recent_hash+"/StoryTime.mp4")
 });
 
 api.post('/generate', async (req, res) => {

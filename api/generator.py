@@ -1,5 +1,6 @@
 import cv2
 import glob
+import os
 from moviepy.editor import *
 
 def generate_story_cv(hash):
@@ -18,7 +19,16 @@ def generate_story_cv(hash):
 
     cv2.destroyAllWindows()
 
+def add_music(vid_hash, music_file):
+    outdir = "./stories/" + vid_hash + "/"
+    video_clip = VideoFileClip(outdir+'movie.avi')
+    video_clip.write_videofile(outdir+'preStoryTime.mp4', fps=24)
+    os.system('ffmpeg -i '+ outdir+'preStoryTime.mp4'+' -i '+ music_file + ' -shortest '+ outdir +'StoryTime.mp4')
+
+
+
 if __name__ == '__main__':
     # generate_story()
     hash = sys.argv[1]
     generate_story_cv(hash)
+    add_music(hash, './music/ele.mp3') #have sentiment analysis passed here.
