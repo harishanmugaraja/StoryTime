@@ -1,3 +1,6 @@
 outputs/
 *.ckpt
+*.mp4
+*.avi
+stories/
 api/node_modules

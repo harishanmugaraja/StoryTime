@@ -1,28 +1,24 @@
-import click
-import os
+import cv2
+import glob
 from moviepy.editor import *
 
-@click.command()
-@click.flag("hash", "the hash dir for the movie")
-def generate_story(hash):
+def generate_story_cv(hash):
+    outdir = "./stories/"+hash+"/"
 
-    outdir = "stories/"+hash+"/"
+    img_array = []
+    for filename in glob.glob(outdir + 'samples/*.png'):
+        img = cv2.imread(filename)
+        img_array.append(img)
 
-    # stable diffusion
+    out = cv2.VideoWriter(outdir+'movie.avi', cv2.VideoWriter_fourcc(*'DIVX'), 0.25, (img_array[0].shape[1],img_array[0].shape[0]))
 
-    all_imgs = [
-        outdir + name for name in os.listdir(outdir)
-        if name.endswith('png') 
-    ]
+    for i in range(len(img_array)):
+        out.write(img_array[i])
+    out.release()
 
-    clip = ImageSequenceClip(all_imgs, fps = 5)
+    cv2.destroyAllWindows()
 
-    clip.ipython_display(width = 512)
-
-
-
-
-
-    
-
-
+if __name__ == '__main__':
+    # generate_story()
+    hash = sys.argv[1]
+    generate_story_cv(hash)
