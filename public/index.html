@@ -155,6 +155,32 @@
           }
         }
         </style>
+        <style>
+          @keyframes spinner {
+            0% {
+              transform: translate3d(-50%, -50%, 0) rotate(0deg);
+            }
+            100% {
+              transform: translate3d(-50%, -50%, 0) rotate(360deg);
+            }
+          }
+          .spin::before {
+            animation: 1.5s linear infinite spinner;
+            animation-play-state: inherit;
+            border: solid 5px #cfd0d1;
+            border-bottom-color: #1c87c9;
+            border-radius: 50%;
+            content: "";
+            height: 40px;
+            width: 40px;
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            transform: translate3d(-50%, -50%, 0);
+            will-change: transform;
+          }
+      </style>
+
     </header>
     <body>
         <div class="box"></div>
@@ -178,14 +204,19 @@
             <div id="downloadMovie" class = "generate" onclick = "download()">
                 <input class = "generate-btn" type = "button" value = "Download Story!">
             </div>
+            <div id="downloadSpinner" class = "generate">
+                <div class="spin"></div>
+            </div>
         </div>
     </body>
+    <script src="https://cdnjs.deepai.org/deepai.min.js"></script>
     <script>
     API_URL = "http://localhost:8080";
-
     var dm = document.getElementById("downloadMovie");
+    var ds = document.getElementById("downloadSpinner");
+    var gb = document.getElementById("genButton");
     dm.style.display = "none";
-
+    ds.style.display = "none";
     function download(){
       console.log('inside of download');
       window.open('http://localhost:8080/download', '_blank');
@@ -193,11 +224,30 @@
 
     async function generate(){
       console.log("entered generate!");
-      var gb = document.getElementById("genButton");
       gb.style.display = "none";
       dm.style.display = "none";
+      ds.style.display = '';
       var story = document.getElementById("textarea").value;
-      data = {"story": story};
+      deepai.setApiKey('010db831-fbdc-4683-b188-89dc060790bf');
+      var sent_res = await deepai.callStandardApi("sentiment-analysis", {text: story});
+      console.log(sent_res);
+
+
+      var sent_string = sent_res['output'][0];
+
+      console.log(sent_string);
+      var sent_val = 0;
+
+
+      if (sent_string.includes('sitive')) {
+        sent_val = 1;
+      }
+      if (sent_string.includes('egative')) {
+        sent_val = -1;
+      }
+
+
+      data = {"story": story, "sent":sent_val};
       const response = await fetch(API_URL + "/generate", {
           method: 'POST',
           headers: {
@@ -209,6 +259,9 @@
       console.log(response);
       gb.style.display = '';
       dm.style.display = '';
+      ds.style.display = "none";
+
+
     }
     </script>
 </html>
