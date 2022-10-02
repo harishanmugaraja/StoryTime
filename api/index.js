@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('node:child_process');
+const { exec } = require('child_process');
 // const exec = require('await-exec');
 const api = express();
 const port = 8080;
@@ -66,13 +66,12 @@ api.post('/generate', async (req, res) => {
         console.log('Wrote to file!')
     });
 
-
     // await exec('python scripts/txt2img.py --from-file stories/'+hash+'/prompts.txt --ddim_steps 128 --scale 7.5 --H 256 --W 320 --n_iter 1 --n_samples 1 --outdir stories/'+hash+' --seed '+ (Math.floor(Math.random() * 10000000) + 1)+'');
 
     // await exec('python generator.py '+hash+'');
 
-
-    exec('python scripts/txt2img.py --from-file stories/'+hash+'/prompts.txt --ddim_steps 128 --scale 7.5 --H 256 --W 320 --n_iter 1 --n_samples 1 --outdir stories/'+hash+' --seed '+ (Math.floor(Math.random() * 10000000) + 1)+'' , (err, output) => {
+    exec("python webui.py --outdir \"./stories/"+hash+"/\"", (err, output) => {
+    // exec('python scripts/txt2img.py --from-file stories/'+hash+'/prompts.txt --ddim_steps 128 --scale 7.5 --H 256 --W 320 --n_iter 1 --n_samples 1 --outdir stories/'+hash+' --seed '+ (Math.floor(Math.random() * 10000000) + 1)+'' , (err, output) => {
       // once the command has completed, the callback function is called
       if (err) {
           // log and return if we encounter an error
@@ -94,8 +93,6 @@ api.post('/generate', async (req, res) => {
         res.redirect('/download');
       });
     });
-
-
 
 });
 
